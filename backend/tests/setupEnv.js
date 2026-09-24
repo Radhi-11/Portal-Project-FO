@@ -1,0 +1,11 @@
+process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = 'test_jwt_secret_for_testing';
+process.env.JWT_EXPIRES_IN = '24h';
+process.env.DB_HOST = 'localhost';
+process.env.DB_PORT = '5432';
+process.env.DB_DATABASE = 'test_db';
+process.env.DB_USER = 'postgres';
+process.env.DB_PASSWORD = 'postgres123';
+process.env.DB_SSL = 'false';
+process.env.BCRYPT_SALT_ROUNDS = '4';
+process.env.CORS_ORIGIN = '*';

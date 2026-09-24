@@ -1,0 +1,222 @@
+.upload-project-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+}
+
+.upload-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.upload-header h1 {
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xl);
+  padding: 0 var(--spacing-md);
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+.step-circle.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.step-label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.upload-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-2xl);
+}
+
+.step-content h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.step-content .text-secondary {
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.dual-upload {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin: var(--spacing-xl) 0;
+}
+
+.upload-section h3 {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.processing-container {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-md);
+}
+
+.validation-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 400px;
+  margin: var(--spacing-xl) auto 0;
+}
+
+.validation-step {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 8px 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-small);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.validation-step.completed {
+  opacity: 1;
+  background: var(--color-primary-light);
+}
+
+.validation-step-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.validation-step.completed .validation-step-icon {
+  color: var(--color-success);
+}
+
+.validation-step-name {
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.review-header h2 {
+  margin: 0;
+}
+
+.extraction-badge {
+  font-size: 11px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.extraction-summary {
+  margin: var(--spacing-xl) 0;
+}
+
+.summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+  padding: var(--spacing-lg);
+}
+
+.summary-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-surface-border);
+  font-size: 13px;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.text-warning {
+  color: var(--color-warning);
+  font-weight: 500;
+}
+
+.review-form.editable :read-only {
+  background: var(--color-background);
+  border-color: var(--color-primary);
+}
+
+.review-form :read-only {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+@media (max-width: 768px) {
+  .dual-upload {
+    grid-template-columns: 1fr;
+  }
+}

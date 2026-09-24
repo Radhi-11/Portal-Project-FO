@@ -1,0 +1,49 @@
+{
+  "name": "portal-project-fo-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Portal Project FO - Fiber Optic project management",
+  "main": "src/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "dev:mem": "node src/server.js",
+    "dev:mem:watch": "nodemon src/server.js",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "db:init": "node scripts/db-init.js",
+    "test": "jest --forceExit"
+  },
+  "keywords": [
+    "fiber-optic",
+    "project-management",
+    "api"
+  ],
+  "author": "Portal Project FO",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-validator": "^7.3.2",
+    "fast-xml-parser": "^4.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jszip": "^3.10.1",
+    "multer": "^2.4.0",
+    "pg": "^8.12.0",
+    "uuid": "^14.0.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "eslint": "^9.1.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.5.2",
+    "nodemon": "^3.1.0",
+    "pg-mem": "^3.0.14",
+    "supertest": "^6.3.4"
+  }
+}
