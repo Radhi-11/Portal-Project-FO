@@ -10,10 +10,8 @@ const fs = require('fs');
 const { createNotification } = require('../middlewares/auditLog');
 
 const createProjectValidation = [
-  body('project_code').notEmpty().withMessage('Project code is required'),
   body('project_name').notEmpty().withMessage('Project name is required'),
   body('project_type').optional().isString().withMessage('Project type must be a string'),
-  body('customer').optional().isString().withMessage('Customer must be a string'),
   body('province').optional().isString().withMessage('Province must be a string'),
   body('city').optional().isString().withMessage('City must be a string'),
   body('address').optional().isString().withMessage('Address must be a string'),
@@ -74,7 +72,6 @@ async function parseProjectFiles(req, res, next) {
 
     const extractedData = {
       project_name: boqInfo.projectName,
-      customer: boqInfo.customer || null,
       address: boqInfo.address || geoInfo?.displayName || null,
       province: geoInfo?.province || null,
       city: geoInfo?.city || boqInfo.location || null,
@@ -245,24 +242,13 @@ async function createProject(req, res, next) {
 
     const userId = req.user.id;
     const {
-      project_code,
       project_name,
       project_type,
-      customer,
       province,
       city,
       address,
       boq_proposed_length,
     } = req.body;
-
-    const existing = await db.query('SELECT id FROM projects WHERE project_code = $1', [project_code]);
-    if (existing.rows.length > 0) {
-      await cleanupFiles(req);
-      return res.status(409).json({
-        success: false,
-        error: 'Project code already exists',
-      });
-    }
 
     const boqFile = req.files?.boq?.[0];
     const kmzFile = req.files?.kmz?.[0];
@@ -281,15 +267,14 @@ async function createProject(req, res, next) {
 
     const result = await db.query(
       `INSERT INTO projects (
-        project_code, project_name, project_type, customer, province, city,
+        project_name, project_type, province, city,
         address, boq_proposed_length, total_project_value, validation_status,
         review_status, created_by, current_khs_version_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *`,
       [
-        project_code, project_name, project_type || null, customer || null,
-        province || null, city || null, address || null,
-        boq_proposed_length || null, 0, 'PENDING', 'PENDING_REVIEW', userId, null,
+        project_name, project_type || null, province || null, city || null,
+        address || null, boq_proposed_length || null, 0, 'PENDING', 'PENDING_REVIEW', userId, null,
       ],
     );
 
@@ -425,7 +410,7 @@ async function reviewProject(req, res, next) {
     const { review_status, notes } = req.body;
 
     const projectResult = await db.query(
-      'SELECT id, project_code, project_name, review_status FROM projects WHERE id = $1',
+      'SELECT id, project_name, review_status FROM projects WHERE id = $1',
       [req.params.id],
     );
 
@@ -520,7 +505,7 @@ async function listProjects(req, res, next) {
     }
 
     if (req.query.search) {
-      whereClauses.push(`(p.project_code ILIKE $${paramCount} OR p.project_name ILIKE $${paramCount} OR p.customer ILIKE $${paramCount})`);
+      whereClauses.push(`(p.project_name ILIKE $${paramCount})`);
       values.push(`%${req.query.search}%`);
       paramCount += 1;
     }
@@ -532,7 +517,7 @@ async function listProjects(req, res, next) {
 
     values.push(limit, offset);
     const result = await db.query(
-      `SELECT p.id, p.project_code, p.project_name, p.project_type, p.customer,
+      `SELECT p.id, p.project_name, p.project_type,
               p.province, p.city, p.boq_proposed_length, p.kmz_selected_length,
               p.total_project_value, p.validation_status, p.review_status,
               p.created_at, p.updated_at, u.username as creator
@@ -726,7 +711,7 @@ async function getProjectKmzLength(req, res, next) {
 async function getApprovedProjectsForGeomap(req, res, next) {
   try {
     const projectsResult = await db.query(
-      `SELECT p.id, p.project_code, p.project_name, p.project_type, p.province, p.city,
+      `SELECT p.id, p.project_name, p.project_type, p.province, p.city,
               p.total_project_value, p.validation_status, p.review_status,
               p.created_at, p.updated_at
        FROM projects p
@@ -770,7 +755,6 @@ async function getApprovedProjectsForGeomap(req, res, next) {
 
         return {
           id: p.id,
-          project_code: p.project_code,
           project_name: p.project_name,
           project_type: p.project_type,
           province: p.province,

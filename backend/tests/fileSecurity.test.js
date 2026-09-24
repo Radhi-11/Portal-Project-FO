@@ -52,7 +52,6 @@ describe('File Security Tests', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_FILE_TEST_1')
         .field('project_name', 'File Security Test 1')
         .attach('boq', Buffer.from('test'), { filename: 'test.txt', contentType: 'text/plain' })
         .attach('kmz', Buffer.from('test'), {
@@ -67,7 +66,6 @@ describe('File Security Tests', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_FILE_TEST_2')
         .field('project_name', 'File Security Test 2')
         .attach('boq', Buffer.from('test'), { filename: 'test.pdf', contentType: 'application/pdf' })
         .attach('kmz', Buffer.from('test'), {
@@ -82,7 +80,6 @@ describe('File Security Tests', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_FILE_TEST_3')
         .field('project_name', 'File Security Test 3')
         .attach('boq', createValidBoqBuffer(), {
           filename: 'test-boq.xlsx',
@@ -104,7 +101,6 @@ describe('File Security Tests', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_FILE_ACCESS_TEST')
         .field('project_name', 'File Access Test')
         .attach('boq', createValidBoqBuffer(), {
           filename: 'test-boq.xlsx',

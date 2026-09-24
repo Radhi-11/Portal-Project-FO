@@ -118,7 +118,6 @@ describe('Audit & Notification API', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_AUDIT_TEST')
         .field('project_name', 'Audit Test Project')
         .attach('boq', boqBuffer, {
           filename: 'test-boq.xlsx',

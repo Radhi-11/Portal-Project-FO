@@ -42,10 +42,8 @@ export default function UploadProject() {
   });
 
   const [formData, setFormData] = useState({
-    project_code: '',
     project_name: '',
     project_type: '',
-    customer: '',
     province: '',
     city: '',
     address: '',
@@ -113,10 +111,8 @@ export default function UploadProject() {
         setExtractedData(res.data.data);
 
         setFormData({
-          project_code: generateProjectCode(res.data.data.project_name),
           project_name: res.data.data.project_name || '',
           project_type: '',
-          customer: res.data.data.customer || '',
           province: res.data.data.province || '',
           city: res.data.data.city || '',
           address: res.data.data.address || '',
@@ -137,20 +133,7 @@ export default function UploadProject() {
     }
   };
 
-  const generateProjectCode = (projectName) => {
-    if (!projectName) return '';
-    const cleaned = projectName
-      .toUpperCase()
-      .replace(/[^A-Z0-9\s]/g, '')
-      .replace(/\s+/g, '_')
-      .substring(0, 8);
-    const date = new Date();
-    const dateStr = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
-    const random = Math.floor(Math.random() * 1000);
-    return `${cleaned}_${dateStr}_${random}`.substring(0, 30);
-  };
-
-  const handleInputChange = (e) => {
+   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -163,12 +146,10 @@ export default function UploadProject() {
     setSubmitting(true);
     setError('');
 
-    const formDataObj = new FormData();
-    formDataObj.append('project_code', formData.project_code);
-    formDataObj.append('project_name', formData.project_name);
-    formDataObj.append('project_type', formData.project_type || '');
-    formDataObj.append('customer', formData.customer || '');
-    formDataObj.append('province', formData.province || '');
+     const formDataObj = new FormData();
+     formDataObj.append('project_name', formData.project_name);
+     formDataObj.append('project_type', formData.project_type || '');
+     formDataObj.append('province', formData.province || '');
     formDataObj.append('city', formData.city || '');
     formDataObj.append('address', formData.address || '');
     formDataObj.append('boq_proposed_length', formData.boq_proposed_length || '');
@@ -353,82 +334,69 @@ export default function UploadProject() {
         </div>
       )}
 
-      <form
-        className={`review-form ${editMode ? 'editable' : ''}`}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-      >
-        <div className="form-group">
-          <label className="form-label">Project Code *</label>
-          <input
-            type="text"
-            className="form-input"
-            name="project_code"
-            value={formData.project_code}
-            onChange={handleInputChange}
-            readOnly={!editMode}
-            required
-          />
-        </div>
+       <form
+         className={`review-form ${editMode ? 'editable' : ''}`}
+         onSubmit={(e) => {
+           e.preventDefault();
+           handleSubmit();
+         }}
+       >
+         <div className="form-group">
+           <label className="form-label">Project Name *</label>
+           <input
+             type="text"
+             className="form-input"
+             name="project_name"
+             value={formData.project_name}
+             onChange={handleInputChange}
+             readOnly={!editMode}
+             required
+           />
+         </div>
 
-        <div className="form-group">
-          <label className="form-label">Project Name *</label>
-          <input
-            type="text"
-            className="form-input"
-            name="project_name"
-            value={formData.project_name}
-            onChange={handleInputChange}
-            readOnly={!editMode}
-            required
-          />
-        </div>
+         <div className="form-group">
+           <label className="form-label">Project Type</label>
+           <select
+             className="form-input"
+             name="project_type"
+             value={formData.project_type}
+             onChange={handleInputChange}
+             disabled={!editMode}
+           >
+             <option value="">Select project type</option>
+             {projectTypes.map((pt) => (
+               <option key={pt.code} value={pt.code}>
+                 {pt.name}
+               </option>
+             ))}
+           </select>
+         </div>
 
-        <div className="form-group">
-          <label className="form-label">Project Type</label>
-          <select
-            className="form-input"
-            name="project_type"
-            value={formData.project_type}
-            onChange={handleInputChange}
-            disabled={!editMode}
-          >
-            <option value="">Select project type</option>
-            {projectTypes.map((pt) => (
-              <option key={pt.code} value={pt.code}>
-                {pt.name}
-              </option>
-            ))}
-          </select>
-        </div>
+         <div className="form-grid">
+           <div className="form-group">
+             <label className="form-label">Province</label>
+             <input
+               type="text"
+               className="form-input"
+               name="province"
+               value={formData.province}
+               onChange={handleInputChange}
+               readOnly={!editMode}
+             />
+           </div>
 
-        <div className="form-grid">
-          <div className="form-group">
-            <label className="form-label">Customer</label>
-            <input
-              type="text"
-              className="form-input"
-              name="customer"
-              value={formData.customer}
-              onChange={handleInputChange}
-              readOnly={!editMode}
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Province</label>
-            <input
-              type="text"
-              className="form-input"
-              name="province"
-              value={formData.province}
-              onChange={handleInputChange}
-              readOnly={!editMode}
-            />
-          </div>
-        </div>
+           <div className="form-group">
+             <label className="form-label">City</label>
+             <input
+               type="text"
+               className="form-input"
+               name="city"
+               value={formData.city}
+               onChange={handleInputChange}
+               readOnly={!editMode}
+             />
+           </div>
+         </div>
 
         <div className="form-grid">
           <div className="form-group">

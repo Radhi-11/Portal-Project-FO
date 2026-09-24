@@ -139,10 +139,8 @@ describe('Project API', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_TEST_001')
         .field('project_name', 'Test Project')
         .field('project_type', 'PASANG_BARU')
-        .field('customer', 'Test Customer')
         .field('province', 'Jakarta')
         .field('city', 'Jakarta Pusat')
         .field('address', 'Jl. Test No. 1')
@@ -152,27 +150,13 @@ describe('Project API', () => {
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
-      expect(res.body.project.project_code).toBe('PROJ_TEST_001');
-    });
-
-    it('should reject duplicate project code', async () => {
-      const res = await request(app)
-        .post('/api/projects')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_TEST_001')
-        .field('project_name', 'Duplicate')
-        .attach('boq', Buffer.from(boqContent), { filename: 'test-boq.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-        .attach('kmz', Buffer.from(kmzContent), { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
-
-      expect(res.status).toBe(409);
-      expect(res.body.success).toBe(false);
+      expect(res.body.project).toBeDefined();
     });
 
     it('should reject invalid BoQ file type', async () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_TEST_002')
         .field('project_name', 'Bad File Type')
         .attach('boq', Buffer.from('test'), { filename: 'test.txt', contentType: 'text/plain' })
         .attach('kmz', Buffer.from(kmzContent), { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
@@ -184,7 +168,6 @@ describe('Project API', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_TEST_003')
         .field('project_name', 'Missing BoQ')
         .attach('kmz', Buffer.from(kmzContent), { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
 
@@ -195,7 +178,6 @@ describe('Project API', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_TEST_004')
         .field('project_name', 'Missing KMZ')
         .attach('boq', Buffer.from(boqContent), { filename: 'test-boq.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
@@ -205,7 +187,6 @@ describe('Project API', () => {
     it('should reject without token', async () => {
       const res = await request(app)
         .post('/api/projects')
-        .field('project_code', 'PROJ_NO_AUTH')
         .field('project_name', 'No Auth')
         .attach('boq', Buffer.from(boqContent), { filename: 'test-boq.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
         .attach('kmz', Buffer.from(kmzContent), { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
@@ -213,11 +194,10 @@ describe('Project API', () => {
       expect(res.status).toBe(401);
     });
 
-    it('should reject missing project code', async () => {
+    it('should reject missing project name', async () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_name', 'No Code')
         .attach('boq', Buffer.from(boqContent), { filename: 'test-boq.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
         .attach('kmz', Buffer.from(kmzContent), { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
 
@@ -235,7 +215,6 @@ describe('Project API', () => {
       const createRes = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_REVIEW_TEST')
         .field('project_name', 'Review Test Project')
         .attach('boq', boqContent, { filename: 'test-boq.xlsx', contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
         .attach('kmz', kmzBuffer, { filename: 'test-route.kmz', contentType: 'application/vnd.google-earth.kmz' });
@@ -306,7 +285,7 @@ describe('Project API', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.project.project_code).toBeDefined();
+      expect(res.body.project.id).toBeDefined();
       expect(Array.isArray(res.body.files)).toBe(true);
     });
 
@@ -343,7 +322,6 @@ describe('Project API', () => {
       const createRes = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_KMZ_TEST')
         .field('project_name', 'KMZ Map Test')
         .attach('boq', boqContent, { filename: 'test-boq.xlsx' })
         .attach('kmz', kmzBuffer, { filename: 'test-route.kmz' });
@@ -387,7 +365,6 @@ describe('Project API', () => {
       const createRes = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${adminToken}`)
-        .field('project_code', 'PROJ_GEOMAP_TEST')
         .field('project_name', 'Geomap Test Project')
         .attach('boq', boqContent, { filename: 'test-boq.xlsx' })
         .attach('kmz', kmzBuffer, { filename: 'test-route.kmz' });

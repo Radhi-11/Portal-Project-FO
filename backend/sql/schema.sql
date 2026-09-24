@@ -41,10 +41,8 @@ ON CONFLICT (code) DO NOTHING;
 -- Projects table (Phase 2: Project Upload)
 CREATE TABLE IF NOT EXISTS projects (
   id SERIAL PRIMARY KEY,
-  project_code VARCHAR(100) UNIQUE NOT NULL,
   project_name VARCHAR(255) NOT NULL,
   project_type VARCHAR(50) REFERENCES project_types(code),
-  customer VARCHAR(255),
   province VARCHAR(100),
   city VARCHAR(100),
   address TEXT,
@@ -61,9 +59,8 @@ CREATE TABLE IF NOT EXISTS projects (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_projects_code ON projects(project_code);
+CREATE INDEX IF NOT EXISTS idx_projects_name ON projects(project_name);
 CREATE INDEX IF NOT EXISTS idx_projects_type ON projects(project_type);
-CREATE INDEX IF NOT EXISTS idx_projects_customer ON projects(customer);
 CREATE INDEX IF NOT EXISTS idx_projects_created_by ON projects(created_by);
 CREATE INDEX IF NOT EXISTS idx_projects_review_status ON projects(review_status);
 CREATE INDEX IF NOT EXISTS idx_projects_validation_status ON projects(validation_status);

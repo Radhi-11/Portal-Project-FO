@@ -136,7 +136,7 @@ async function getProjectReports(req, res, next) {
     }));
 
     const projectsResult = await db.query(
-      `SELECT p.id, p.project_code, p.project_name, p.project_type, p.customer,
+      `SELECT p.id, p.project_name, p.project_type,
               p.province, p.city, p.boq_proposed_length,
               p.kmz_selected_length, p.total_project_value, p.validation_status,
               p.review_status, p.created_at, u.username as creator

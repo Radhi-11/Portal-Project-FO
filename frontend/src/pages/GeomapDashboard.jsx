@@ -52,18 +52,14 @@ function ProjectMarker({ project, onSelect, isSelected, map }) {
         autoClose
         closeButton
       >
-        <div className="popup-content-modern">
-          <div className="popup-header">
-            <div className="popup-project-code">{project.project_code}</div>
-            <div className="popup-divider"></div>
-          </div>
-          <div className="popup-title">{project.project_name}</div>
-          <div className="popup-row">
-            <span className="popup-label">Project Value</span>
-            <span className="popup-value">
-              <FormatCompact value={project.total_project_value} />
-            </span>
-          </div>
+          <div className="popup-content-modern">
+            <div className="popup-title">{project.project_name}</div>
+            <div className="popup-row">
+              <span className="popup-label">Project Value</span>
+              <span className="popup-value">
+                <FormatCompact value={project.total_project_value} />
+              </span>
+            </div>
           <div className="popup-row">
             <span className="popup-label">Location</span>
             <span className="popup-value">
@@ -149,7 +145,6 @@ export default function GeomapDashboard() {
       result = result.filter(
         (p) =>
           (p.project_name || '').toLowerCase().includes(lower) ||
-          (p.project_code || '').toLowerCase().includes(lower) ||
           (p.city || '').toLowerCase().includes(lower) ||
           (p.province || '').toLowerCase().includes(lower),
       );

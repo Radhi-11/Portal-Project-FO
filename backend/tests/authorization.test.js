@@ -88,7 +88,6 @@ describe('Authorization Tests', () => {
       const res = await request(app)
         .post('/api/projects')
         .set('Authorization', `Bearer ${userToken}`)
-        .field('project_code', 'PROJ_USER_AUTH_TEST')
         .field('project_name', 'User Auth Test Project')
         .attach('boq', Buffer.from('test'), {
           filename: 'test-boq.xlsx',

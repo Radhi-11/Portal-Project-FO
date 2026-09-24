@@ -54,8 +54,7 @@ export default function Reports() {
     if (!search) return true;
     const lower = search.toLowerCase();
     return (
-      (p.project_name || '').toLowerCase().includes(lower) ||
-      (p.project_code || '').toLowerCase().includes(lower)
+      (p.project_name || '').toLowerCase().includes(lower)
     );
   }) || [];
 
