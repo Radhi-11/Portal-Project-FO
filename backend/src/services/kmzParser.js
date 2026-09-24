@@ -52,11 +52,28 @@ function calculateLineStringLength(coords) {
   return total;
 }
 
+function parseTrackCoordinates(coordStr) {
+  if (!coordStr || typeof coordStr !== 'string') return [];
+  const coords = [];
+  const parts = coordStr.trim().split(/[\s\n]+/).filter((p) => p.length > 0);
+  for (const part of parts) {
+    const values = part.split(' ').map((v) => {
+      const num = parseFloat(v);
+      return isNaN(num) ? null : num;
+    });
+    if (values.length >= 2 && values[0] !== null && values[1] !== null) {
+      coords.push({ lat: values[1], lon: values[0], alt: values[2] || 0 });
+    }
+  }
+  return coords;
+}
+
 module.exports = {
   parseKmz,
   extractFirstCoordinate,
   classifyRoute,
   calculateLineStringLength,
+  parseTrackCoordinates,
   haversineDistance,
 };
 
@@ -131,6 +148,26 @@ async function parseKmz(filePath) {
               ? pm.LineString.coordinates['#text'] || pm.LineString.coordinates
               : '',
         );
+        if (coords.length > 0) {
+          const length = calculateLineStringLength(coords);
+          objects.push({
+            name,
+            type: 'LINESTRING',
+            route_type: classifyRoute(name),
+            coordinates: coords,
+            calculated_length: length,
+            description: typeof description === 'string' ? description : '',
+            is_selected_for_validation: name.toLowerCase().includes('dropcore') || name.toLowerCase().includes('drop'),
+          });
+        }
+      }
+
+      if (pm['gx:Track'] || pm.gxTrack) {
+        const track = pm['gx:Track'] || pm.gxTrack;
+        const coordStr = Array.isArray(track)
+          ? track.map((t) => t['gx:coord'] || t.coord || '').join(' ')
+          : track['gx:coord'] || track.coord || '';
+        const coords = parseTrackCoordinates(coordStr);
         if (coords.length > 0) {
           const length = calculateLineStringLength(coords);
           objects.push({
@@ -259,9 +296,21 @@ async function parseKmz(filePath) {
     processPlacemarks(topPlacemarks, 'Root');
   }
 
-  for (const folder of folders) {
-    processPlacemarks(folder.Placemark || [], folder.name || folder.Name || 'Folder');
+  function processFolder(folder, folderName) {
+    if (!folder) return;
+    const folders = Array.isArray(folder) ? folder : [folder];
+    for (const f of folders) {
+      const name = f.name || f.Name || folderName || 'Folder';
+      if (f.Placemark) {
+        processPlacemarks(f.Placemark, name);
+      }
+      if (f.Folder) {
+        processFolder(f.Folder, name);
+      }
+    }
   }
+
+  processFolder(folders, 'Root');
 
   return {
     success: true,
@@ -300,11 +349,3 @@ async function extractFirstCoordinate(kmzPath) {
 
   throw new Error('No valid coordinates found in KMZ');
 }
-
-module.exports = {
-  parseKmz,
-  extractFirstCoordinate,
-  classifyRoute,
-  calculateLineStringLength,
-  haversineDistance,
-};

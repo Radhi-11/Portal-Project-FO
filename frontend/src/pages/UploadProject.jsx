@@ -336,7 +336,7 @@ export default function UploadProject() {
               {extractedData.geocoding?.error && (
                 <div className="summary-row">
                   <span>Geocoding</span>
-                  <span className="text-warning">Limited (offline)</span>
+                  <span className="text-warning">Estimated (offline mode)</span>
                 </div>
               )}
             </div>
