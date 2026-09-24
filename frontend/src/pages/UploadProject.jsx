@@ -125,11 +125,16 @@ export default function UploadProject() {
         }, 500);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        'Failed to parse files. Please try again.',
-      );
+      if (err.response?.data?.errors) {
+        const errorMessages = err.response.data.errors.map((e) => e.msg).join(', ');
+        setError(errorMessages || 'Failed to parse files. Please try again.');
+      } else {
+        setError(
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Failed to parse files. Please try again.',
+        );
+      }
     }
   };
 
@@ -169,11 +174,16 @@ export default function UploadProject() {
         }, 2000);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        'Failed to submit project.',
-      );
+      if (err.response?.data?.errors) {
+        const errorMessages = err.response.data.errors.map((e) => e.msg).join(', ');
+        setError(errorMessages || 'Failed to submit project.');
+      } else {
+        setError(
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          'Failed to submit project.',
+        );
+      }
     } finally {
       setSubmitting(false);
     }
