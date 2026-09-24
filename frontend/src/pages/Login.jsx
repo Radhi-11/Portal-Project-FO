@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
-import lintasartaLogo from '../assets/lintasarta-logo.svg';
+import lintasartaLogo from '../assets/logo_lintasarta.png';
 
 export default function Login() {
   const [username, setUsername] = useState('');

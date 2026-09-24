@@ -192,11 +192,19 @@
   padding: 12px 16px 6px;
 }
 
+.sidebar.collapsed .sidebar-section-title {
+  display: none;
+}
+
 /* KMZ Engine Status */
 .kmz-status {
   margin-top: auto;
   padding: 12px 16px;
   border-top: 1px solid var(--color-border);
+}
+
+.sidebar.collapsed .kmz-status {
+  display: none;
 }
 
 .kmz-status-card {

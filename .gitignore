@@ -40,3 +40,4 @@ Thumbs.db
 # Database data
 postgres-data/
 pgdata/
+backend/uploads/
