@@ -372,33 +372,19 @@ export default function UploadProject() {
            </select>
          </div>
 
-         <div className="form-grid">
-           <div className="form-group">
-             <label className="form-label">Province</label>
-             <input
-               type="text"
-               className="form-input"
-               name="province"
-               value={formData.province}
-               onChange={handleInputChange}
-               readOnly={!editMode}
-             />
-           </div>
-
-           <div className="form-group">
-             <label className="form-label">City</label>
-             <input
-               type="text"
-               className="form-input"
-               name="city"
-               value={formData.city}
-               onChange={handleInputChange}
-               readOnly={!editMode}
-             />
-           </div>
-         </div>
-
         <div className="form-grid">
+          <div className="form-group">
+            <label className="form-label">Province</label>
+            <input
+              type="text"
+              className="form-input"
+              name="province"
+              value={formData.province}
+              onChange={handleInputChange}
+              readOnly={!editMode}
+            />
+          </div>
+
           <div className="form-group">
             <label className="form-label">City</label>
             <input
@@ -410,20 +396,20 @@ export default function UploadProject() {
               readOnly={!editMode}
             />
           </div>
+        </div>
 
-          <div className="form-group">
-            <label className="form-label">Proposed Length (m)</label>
-            <input
-              type="number"
-              className="form-input"
-              name="boq_proposed_length"
-              value={formData.boq_proposed_length}
-              onChange={handleInputChange}
-              readOnly={!editMode}
-              min="0"
-              step="0.01"
-            />
-          </div>
+        <div className="form-group">
+          <label className="form-label">Proposed Length (m)</label>
+          <input
+            type="number"
+            className="form-input"
+            name="boq_proposed_length"
+            value={formData.boq_proposed_length}
+            onChange={handleInputChange}
+            readOnly={!editMode}
+            min="0"
+            step="0.01"
+          />
         </div>
 
         <div className="form-group">
