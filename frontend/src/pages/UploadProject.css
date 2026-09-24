@@ -91,19 +91,24 @@
 }
 
 .form-actions .btn-primary {
-  background: #0B5ED7;
-  color: #FFFFFF;
-  border: 1px solid #0B5ED7;
+  background: #0B5ED7 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0B5ED7 !important;
 }
 
 .form-actions .btn-primary:hover {
-  background: #0950b8;
+  background: #0950b8 !important;
+}
+
+.form-actions .btn-primary:active {
+  background: #0950b8 !important;
+  transform: scale(0.97);
 }
 
 .form-actions .btn-primary:disabled {
-  background: #9CA3AF;
-  border-color: #9CA3AF;
-  cursor: not-allowed;
+  background: #9CA3AF !important;
+  border-color: #9CA3AF !important;
+  cursor: not-allowed !important;
 }
 
 .dual-upload {
