@@ -176,12 +176,14 @@ async function parseKmz(filePath) {
     const arr = Array.isArray(placemarks) ? placemarks : [placemarks];
 
     for (const pm of arr) {
-      const name =
+       const name =
         pm.name || pm.Name || parentFolder || 'Unnamed';
       const description =
         pm.description || pm.Description || '';
 
-      if (pm.Point || (pm['@_'] && pm.Point)) {
+      const hasMultiGeometry = !!pm.MultiGeometry;
+
+      if (!hasMultiGeometry && (pm.Point || (pm['@_'] && pm.Point))) {
         const coords = parseCoordinates(
           typeof pm.Point?.coordinates === 'string'
             ? pm.Point.coordinates
@@ -202,7 +204,7 @@ async function parseKmz(filePath) {
         }
       }
 
-      if (pm.LineString) {
+      if (!hasMultiGeometry && pm.LineString) {
         const coords = parseCoordinates(
           typeof pm.LineString?.coordinates === 'string'
             ? pm.LineString.coordinates
@@ -224,7 +226,7 @@ async function parseKmz(filePath) {
         }
       }
 
-      if (pm['gx:Track'] || pm.gxTrack) {
+      if (!hasMultiGeometry && (pm['gx:Track'] || pm.gxTrack)) {
         const track = pm['gx:Track'] || pm.gxTrack;
         const coordStr = Array.isArray(track)
           ? track.map((t) => t['gx:coord'] || t.coord || '').join(' ')
@@ -244,7 +246,7 @@ async function parseKmz(filePath) {
         }
       }
 
-      if (pm.Polygon) {
+      if (!hasMultiGeometry && pm.Polygon) {
         const coords = parseCoordinates(
           typeof pm.Polygon?.outerBoundaryIs?.LinearRing?.coordinates === 'string'
             ? pm.Polygon.outerBoundaryIs.LinearRing.coordinates
@@ -340,13 +342,6 @@ async function parseKmz(filePath) {
         }
       }
 
-      if (pm.Folder) {
-        const folders = Array.isArray(pm.Folder) ? pm.Folder : [pm.Folder];
-        for (const folder of folders) {
-          const folderName = folder.name || folder.Name || parentFolder;
-          processPlacemarks(folder.Placemark, folderName);
-        }
-      }
     }
   }
 
