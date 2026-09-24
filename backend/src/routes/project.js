@@ -8,6 +8,7 @@ const {
   listProjectTypes,
   downloadFile,
   createProjectValidation,
+  updateProjectValidation,
   listValidation,
   parseProjectFiles,
   parseKhsFile,
@@ -19,6 +20,8 @@ const {
   getProjectBoqItems,
   getProjectKmzLength,
   getKhsComparison,
+  updateProject,
+  deleteProject,
 } = require('../controllers/projectController');
 const { param } = require('express-validator');
 const multer = require('multer');
@@ -95,5 +98,18 @@ router.post(
 router.get('/:id/boq-items', idValidation, getProjectBoqItems);
 router.get('/:id/kmz-length', idValidation, getProjectKmzLength);
 router.get('/:id/khs-comparison', idValidation, getKhsComparison);
+router.put(
+  '/:id',
+  idValidation,
+  updateProjectValidation,
+  logAction('UPDATE', 'PROJECT'),
+  updateProject,
+);
+router.delete(
+  '/:id',
+  idValidation,
+  logAction('DELETE', 'PROJECT'),
+  deleteProject,
+);
 
 module.exports = router;

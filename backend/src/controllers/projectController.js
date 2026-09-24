@@ -391,6 +391,144 @@ async function getProject(req, res, next) {
   }
 }
 
+const updateProjectValidation = [
+  body('project_name').optional().notEmpty().withMessage('Project name is required'),
+  body('project_type').optional().isString().withMessage('Project type must be a string'),
+  body('province').optional().isString().withMessage('Province must be a string'),
+  body('city').optional().isString().withMessage('City must be a string'),
+  body('address').optional().isString().withMessage('Address must be a string'),
+  body('boq_proposed_length').optional().isFloat({ min: 0 }).withMessage('Proposed length must be a positive number'),
+];
+
+async function updateProject(req, res, next) {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const projectResult = await db.query(
+      'SELECT id FROM projects WHERE id = $1',
+      [req.params.id],
+    );
+
+    if (projectResult.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const project = projectResult.rows[0];
+
+    if (req.user.role !== 'ADMIN' && project.created_by !== req.user.id) {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+
+    const {
+      project_name,
+      project_type,
+      province,
+      city,
+      address,
+      boq_proposed_length,
+    } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (project_name !== undefined) {
+      updates.push(`project_name = $${paramIndex}`);
+      values.push(project_name);
+      paramIndex++;
+    }
+    if (project_type !== undefined) {
+      updates.push(`project_type = $${paramIndex}`);
+      values.push(project_type || null);
+      paramIndex++;
+    }
+    if (province !== undefined) {
+      updates.push(`province = $${paramIndex}`);
+      values.push(province || null);
+      paramIndex++;
+    }
+    if (city !== undefined) {
+      updates.push(`city = $${paramIndex}`);
+      values.push(city || null);
+      paramIndex++;
+    }
+    if (address !== undefined) {
+      updates.push(`address = $${paramIndex}`);
+      values.push(address || null);
+      paramIndex++;
+    }
+    if (boq_proposed_length !== undefined) {
+      updates.push(`boq_proposed_length = $${paramIndex}`);
+      values.push(boq_proposed_length || null);
+      paramIndex++;
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, error: 'No fields to update' });
+    }
+
+    values.push(req.params.id);
+    await db.query(
+      `UPDATE projects SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex}`,
+      values,
+    );
+
+    const updatedResult = await db.query(
+      `SELECT p.*, u.username as creator
+       FROM projects p
+       LEFT JOIN users u ON p.created_by = u.id
+       WHERE p.id = $1`,
+      [req.params.id],
+    );
+
+    res.json({
+      success: true,
+      message: 'Project updated successfully',
+      project: updatedResult.rows[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteProject(req, res, next) {
+  try {
+    const projectResult = await db.query(
+      'SELECT id, project_name, review_status FROM projects WHERE id = $1',
+      [req.params.id],
+    );
+
+    if (projectResult.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const project = projectResult.rows[0];
+
+    if (req.user.role !== 'ADMIN' && project.created_by !== req.user.id) {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+
+    if (project.review_status === 'APPROVED') {
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot delete an approved project',
+      });
+    }
+
+    await db.query('DELETE FROM projects WHERE id = $1', [req.params.id]);
+
+    res.json({
+      success: true,
+      message: 'Project deleted successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 const reviewValidation = [
   body('review_status').isIn(['APPROVED', 'REVISION', 'REJECTED']).withMessage('Invalid review status'),
   body('notes').optional().isString().withMessage('Notes must be a string'),
@@ -833,5 +971,8 @@ module.exports = {
   listProjectTypes,
   downloadFile,
   createProjectValidation,
+  updateProjectValidation,
   listValidation,
+  updateProject,
+  deleteProject,
 };

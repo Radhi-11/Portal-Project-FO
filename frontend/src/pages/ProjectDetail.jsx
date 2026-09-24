@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useProjects } from '../contexts/ProjectContext';
 import Spinner from '../components/Spinner';
@@ -23,8 +23,12 @@ export default function ProjectDetail() {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [reviewNotes, setReviewNotes] = useState('');
-  const { isAdmin } = useAuth();
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { isAdmin, user } = useAuth();
   const { refreshProjects } = useProjects();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadProject();
@@ -90,19 +94,70 @@ export default function ProjectDetail() {
     if (!status) return;
     setActionLoading(true);
     try {
-      await api.post(`/projects/${id}/review`, {
+      const res = await api.post(`/projects/${id}/review`, {
         review_status: status,
         notes: reviewNotes,
       });
-      setReviewNotes('');
-      if (status === 'APPROVED') {
-        refreshProjects();
+
+      if (res.data.success) {
+        setReviewNotes('');
+        if (status === 'APPROVED') {
+          refreshProjects();
+        }
+        loadProject();
       }
-      loadProject();
     } catch (err) {
-      setError(err.response?.data?.error || 'Review failed.');
+      setError(
+        err.response?.data?.errors
+          ? err.response.data.errors.map((e) => e.msg).join(', ')
+          : err.response?.data?.error || 'Review failed.',
+      );
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleEditChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const res = await api.put(`/projects/${id}`, editData);
+      if (res.data.success) {
+        setProject(res.data.project);
+        setEditMode(false);
+        refreshProjects();
+        setError('');
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.errors
+          ? err.response.data.errors.map((e) => e.msg).join(', ')
+          : err.response?.data?.error || 'Failed to update project.',
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setActionLoading(true);
+    try {
+      const res = await api.delete(`/projects/${id}`);
+      if (res.data.success) {
+        refreshProjects();
+        navigate('/my-projects');
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.error || 'Failed to delete project.',
+      );
+    } finally {
+      setActionLoading(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -133,8 +188,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="project-detail-page">
-      <div className="detail-header-modern">
-        <div>
+      <div className="detail-header-modern">        <div>
           <nav className="breadcrumb">
             <Link to="/my-projects" className="breadcrumb-link">Projects</Link>
             <span className="breadcrumb-separator">›</span>
@@ -154,6 +208,37 @@ export default function ProjectDetail() {
           <Link to={`/projects/${project.id}`} className="btn btn-secondary btn-sm">
             Refresh
           </Link>
+          {(isAdmin || project.created_by === user?.id) && project.review_status !== 'APPROVED' && (
+            <>
+              <button
+                className={`btn btn-sm ${editMode ? 'btn-secondary' : 'btn-primary'}`}
+                onClick={() => {
+                  if (editMode) {
+                    setEditMode(false);
+                    setError('');
+                  } else {
+                    setEditMode(true);
+                    setEditData({
+                      project_name: project.project_name,
+                      project_type: project.project_type || '',
+                      province: project.province || '',
+                      city: project.city || '',
+                      address: project.address || '',
+                      boq_proposed_length: project.boq_proposed_length || '',
+                    });
+                  }
+                }}
+              >
+                {editMode ? 'Cancel Edit' : 'Edit Project'}
+              </button>
+              <button
+                className="btn btn-sm btn-danger"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -164,31 +249,116 @@ export default function ProjectDetail() {
 
       <div className="detail-grid-modern">
         <div className="detail-card">
-          <h2 className="card-title">Project Information</h2>
-          <div className="info-grid">
-            <div className="info-row">
-              <span className="info-label">Project Name</span>
-              <span className="info-value">{project.project_name}</span>
+          <h2 className="card-title">
+            Project Information
+            {editMode && <span className="edit-badge">Editing</span>}
+          </h2>
+          {editMode ? (
+            <form onSubmit={handleEditSubmit} className="edit-form">
+              <div className="form-group">
+                <label className="form-label">Project Name *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  name="project_name"
+                  value={editData.project_name || ''}
+                  onChange={handleEditChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Project Type</label>
+                <select
+                  className="form-input"
+                  name="project_type"
+                  value={editData.project_type || ''}
+                  onChange={handleEditChange}
+                >
+                  <option value="">Select project type</option>
+                  <option value="PASANG_BARU">Pasang Baru</option>
+                  <option value="GANGGUAN">Gangguan</option>
+                  <option value="MUTASI">Mutasi</option>
+                  <option value="RELOKASI">Relokasi</option>
+                  <option value="PERLUASAN_COVERAGE">Perluasan Coverage</option>
+                  <option value="RELOKASI_BACKBONE">Relokasi Backbone</option>
+                  <option value="ADD_ON">Add On</option>
+                  <option value="PREVENTIVE_MAINTENANCE">Preventive Maintenance</option>
+                </select>
+              </div>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label">Province</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    name="province"
+                    value={editData.province || ''}
+                    onChange={handleEditChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">City</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    name="city"
+                    value={editData.city || ''}
+                    onChange={handleEditChange}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Address</label>
+                <textarea
+                  className="form-input"
+                  name="address"
+                  value={editData.address || ''}
+                  onChange={handleEditChange}
+                  rows={3}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Proposed Length (m)</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  name="boq_proposed_length"
+                  value={editData.boq_proposed_length || ''}
+                  onChange={handleEditChange}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <button type="submit" className="btn btn-primary btn-sm" disabled={actionLoading}>
+                {actionLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </form>
+          ) : (
+            <div className="info-grid">
+              <div className="info-row">
+                <span className="info-label">Project Name</span>
+                <span className="info-value">{project.project_name}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Project Type</span>
+                <span className="info-value">{project.project_type || '-'}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Location</span>
+                <span className="info-value">
+                  {project.city ? `${project.city}, ${project.province || ''}` : '-'}
+                </span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Address</span>
+                <span className="info-value">{project.address || '-'}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Created By</span>
+                <span className="info-value">{project.creator || `- (${formatDate(project.created_at)})`}</span>
+              </div>
             </div>
-            <div className="info-row">
-              <span className="info-label">Project Type</span>
-              <span className="info-value">{project.project_type || '-'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Location</span>
-              <span className="info-value">
-                {project.city ? `${project.city}, ${project.province || ''}` : '-'}
-              </span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Address</span>
-              <span className="info-value">{project.address || '-'}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Created By</span>
-              <span className="info-value">{project.creator || `- (${formatDate(project.created_at)})`}</span>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="detail-card">
@@ -434,6 +604,31 @@ export default function ProjectDetail() {
           <KMZMap projectId={id} />
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>Confirm Delete Project</h3>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to delete "{project.project_name}"? This action cannot be undone.</p>
+              {project.review_status === 'APPROVED' && (
+                <p className="text-warning">Note: Approved projects cannot be deleted.</p>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </button>
+              <button className="btn btn-danger btn-sm" onClick={handleDelete} disabled={actionLoading}>
+                {actionLoading ? 'Deleting...' : 'Delete Project'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
