@@ -239,16 +239,13 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="report-card">
+          <div className="report-card">
           <h2>Province Distribution</h2>
           <div className="province-list">
             {data.province_distribution?.length > 0 ? (
               data.province_distribution.map((p) => (
                 <div key={p.province} className="province-item">
                   <span className="province-name">{p.province}</span>
-                  <span className="province-value">
-                    <FormatCompact value={p.total_value} />
-                  </span>
                   <span className="province-count">{p.count} projects</span>
                 </div>
               ))
@@ -265,9 +262,6 @@ export default function Reports() {
               data.city_distribution.map((c) => (
                 <div key={c.city} className="province-item">
                   <span className="province-name">{c.city}</span>
-                  <span className="province-value">
-                    <FormatCompact value={c.total_value} />
-                  </span>
                   <span className="province-count">{c.count} projects</span>
                 </div>
               ))
@@ -280,16 +274,13 @@ export default function Reports() {
         <div className="report-card">
           <h2>Monthly Trend</h2>
           <div className="trend-list">
-            {data.monthly_trend?.length > 0 ? (
+              {data.monthly_trend?.length > 0 ? (
               data.monthly_trend.map((m) => (
                 <div key={`${m.year}-${m.month}`} className="trend-item">
                   <span className="trend-period">
                     {months[m.month - 1]} {m.year}
                   </span>
                   <span className="trend-count">{m.count} projects</span>
-                  <span className="trend-value">
-                    <FormatCompact value={m.total_value} />
-                  </span>
                 </div>
               ))
             ) : (

@@ -89,11 +89,11 @@ async function getProjectReports(req, res, next) {
     }));
 
     const provinceDistributionResult = await db.query(
-      `SELECT province, COUNT(*) as count, COALESCE(SUM(total_project_value), 0) as value
-       FROM projects
-       ${whereSQL}
-       GROUP BY province
-       ORDER BY count DESC`,
+      `SELECT province, COUNT(*) as count, COALESCE(SUM(total_project_value), 0) as total_value
+        FROM projects
+        ${whereSQL}
+        GROUP BY province
+        ORDER BY count DESC`,
       values,
     );
     const provinceDistribution = provinceDistributionResult.rows.map((r) => ({
@@ -103,11 +103,11 @@ async function getProjectReports(req, res, next) {
     }));
 
     const cityDistributionResult = await db.query(
-      `SELECT city, COUNT(*) as count, COALESCE(SUM(total_project_value), 0) as value
-       FROM projects
-       ${whereSQL}
-       GROUP BY city
-       ORDER BY count DESC`,
+      `SELECT city, COUNT(*) as count, COALESCE(SUM(total_project_value), 0) as total_value
+        FROM projects
+        ${whereSQL}
+        GROUP BY city
+        ORDER BY count DESC`,
       values,
     );
     const cityDistribution = cityDistributionResult.rows.map((r) => ({
@@ -121,7 +121,7 @@ async function getProjectReports(req, res, next) {
          EXTRACT(YEAR FROM created_at) as year,
          EXTRACT(MONTH FROM created_at) as month,
          COUNT(*) as count,
-         COALESCE(SUM(total_project_value), 0) as value
+         COALESCE(SUM(total_project_value), 0) as total_value
        FROM projects
        ${whereSQL}
        GROUP BY EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at)
