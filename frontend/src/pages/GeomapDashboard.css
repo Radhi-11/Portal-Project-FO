@@ -571,3 +571,36 @@
     width: 100%;
   }
 }
+
+/* Route tooltips */
+.route-tooltip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0 !important;
+  font-size: 12px;
+}
+
+.route-tooltip-content {
+  padding: 8px 12px;
+  min-width: 180px;
+}
+
+.route-tooltip-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.route-tooltip-value {
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.route-tooltip-length {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 12px;
+}

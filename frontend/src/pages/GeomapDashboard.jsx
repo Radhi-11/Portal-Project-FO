@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Polyline,
+  Tooltip,
   useMapEvents,
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -20,7 +21,7 @@ function FormatCompact({ value }) {
   return formatCurrency(value || 0);
 }
 
-function ProjectRoutes({ routes, selected }) {
+function ProjectRoutes({ project, routes, onSelect, selected }) {
   const existingColor = '#22c55e';
   const proposedColor = '#3b82f6';
   const defaultColor = '#0ea5e9';
@@ -29,18 +30,37 @@ function ProjectRoutes({ routes, selected }) {
     if (!route.coordinates || route.coordinates.length < 2) return null;
     const color = route.route_type === 'EXISTING' ? existingColor :
                   route.route_type === 'PROPOSED' ? proposedColor : defaultColor;
+    const routeLength = route.calculated_length ? (route.calculated_length / 1000).toFixed(2) : null;
     return (
       <Polyline
-        key={`${route.name || 'route'}-${idx}`}
+        key={`${project.id}-${route.name || idx}`}
         positions={route.coordinates}
         pathOptions={{
           color,
-          weight: selected ? 6 : 3,
-          opacity: selected ? 0.9 : 0.7,
+          weight: selected ? 7 : 4,
+          opacity: selected ? 0.95 : 0.8,
           lineCap: 'round',
           lineJoin: 'round',
         }}
-      />
+        eventHandlers={{
+          click: () => {
+            onSelect(project);
+          },
+        }}
+      >
+        <Tooltip
+          pathOptions={{ className: 'route-tooltip' }}
+          direction="top"
+          offset={[0, -10]}
+          opacity={0.9}
+        >
+          <div className="route-tooltip-content">
+            <div className="route-tooltip-name">{project.project_name}</div>
+            <div className="route-tooltip-value">{formatCurrency(project.total_project_value || 0)}</div>
+            <div className="route-tooltip-length">{routeLength} km</div>
+          </div>
+        </Tooltip>
+      </Polyline>
     );
   });
 }
@@ -417,7 +437,9 @@ export default function GeomapDashboard() {
                     map={null}
                   />
                   <ProjectRoutes
+                    project={project}
                     routes={project.routes || []}
+                    onSelect={setSelectedProject}
                     selected={selectedProject?.id === project.id}
                   />
                 </React.Fragment>
