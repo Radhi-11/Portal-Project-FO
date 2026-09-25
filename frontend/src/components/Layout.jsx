@@ -148,16 +148,6 @@ export default function Layout() {
             </div>
           ))}
         </nav>
-
-        <div className="kmz-status">
-          <div className="kmz-status-card">
-            <div className="kmz-status-title">KMZ Engine</div>
-            <div className="kmz-status-indicator">
-              <span className="kmz-status-dot"></span>
-              <span>Ready</span>
-            </div>
-          </div>
-        </div>
       </aside>
 
       <div className={`main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -168,10 +158,6 @@ export default function Layout() {
             </div>
           </div>
           <div className="header-right">
-            <div className="khs-indicator">
-              <span className="active-dot"></span>
-              KHS: AcuanKHSSMUO v2.4 (Active)
-            </div>
             <div className="notification-container" ref={notificationRef}>
               <button
                 className="notification-btn"

@@ -196,47 +196,6 @@
   display: none;
 }
 
-/* KMZ Engine Status */
-.kmz-status {
-  margin-top: auto;
-  padding: 12px 16px;
-  border-top: 1px solid var(--color-border);
-}
-
-.sidebar.collapsed .kmz-status {
-  display: none;
-}
-
-.kmz-status-card {
-  background: var(--color-primary-light);
-  border-radius: var(--radius-medium);
-  padding: 12px;
-  text-align: center;
-}
-
-.kmz-status-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 4px;
-}
-
-.kmz-status-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--color-success);
-}
-
-.kmz-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-success);
-}
-
 /* Main */
 .main {
   flex: 1;
@@ -300,24 +259,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.khs-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--color-primary-light);
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  color: var(--color-primary);
-}
-
-.khs-indicator .active-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-success);
 }
 
 .notification-btn {

@@ -242,11 +242,6 @@ export default function ProjectDetail() {
         </div>
       </div>
 
-      <div className="khs-active-indicator">
-        <span className="indicator-dot"></span>
-        KHS Version: AcuanKHSSMUO.xlsx (Active v2.4)
-      </div>
-
       <div className="detail-grid-modern">
         <div className="detail-card">
           <h2 className="card-title">
