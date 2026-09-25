@@ -861,6 +861,7 @@ async function getApprovedProjectsForGeomap(req, res, next) {
       projectsResult.rows.map(async (p) => {
         let latitude = null;
         let longitude = null;
+        let routes = [];
 
         const kmzFileResult = await db.query(
           'SELECT stored_filename FROM project_files WHERE project_id = $1 AND file_type = $2',
@@ -884,6 +885,12 @@ async function getApprovedProjectsForGeomap(req, res, next) {
                   latitude = coord.coordinates[0].lat;
                   longitude = coord.coordinates[0].lon;
                 }
+                routes = kmzResult.lineStrings.map((ls) => ({
+                  name: ls.name,
+                  route_type: ls.route_type,
+                  coordinates: ls.coordinates.map((c) => [c.lat, c.lon]),
+                  calculated_length: ls.calculated_length,
+                }));
               }
             } catch (e) {
               console.warn(`Failed to parse KMZ for project ${p.id}:`, e.message);
@@ -902,6 +909,7 @@ async function getApprovedProjectsForGeomap(req, res, next) {
           review_status: p.review_status,
           latitude,
           longitude,
+          routes,
           created_at: p.created_at,
           updated_at: p.updated_at,
         };

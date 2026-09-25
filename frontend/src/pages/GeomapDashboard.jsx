@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapContainer,
   TileLayer,
   Marker,
   Popup,
+  Polyline,
   useMapEvents,
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -17,6 +18,31 @@ const DEFAULT_CENTER = [-6.1748, 106.8272];
 
 function FormatCompact({ value }) {
   return formatCurrency(value || 0);
+}
+
+function ProjectRoutes({ routes, selected }) {
+  const existingColor = '#22c55e';
+  const proposedColor = '#3b82f6';
+  const defaultColor = '#0ea5e9';
+
+  return routes.map((route, idx) => {
+    if (!route.coordinates || route.coordinates.length < 2) return null;
+    const color = route.route_type === 'EXISTING' ? existingColor :
+                  route.route_type === 'PROPOSED' ? proposedColor : defaultColor;
+    return (
+      <Polyline
+        key={`${route.name || 'route'}-${idx}`}
+        positions={route.coordinates}
+        pathOptions={{
+          color,
+          weight: selected ? 6 : 3,
+          opacity: selected ? 0.9 : 0.7,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }}
+      />
+    );
+  });
 }
 
 function ProjectMarker({ project, onSelect, isSelected, map }) {
@@ -383,13 +409,18 @@ export default function GeomapDashboard() {
             {filteredProjects
               .filter((p) => p.latitude && p.longitude)
               .map((project) => (
-                <ProjectMarker
-                  key={project.id}
-                  project={project}
-                  onSelect={setSelectedProject}
-                  isSelected={selectedProject?.id === project.id}
-                  map={null}
-                />
+                <React.Fragment key={project.id}>
+                  <ProjectMarker
+                    project={project}
+                    onSelect={setSelectedProject}
+                    isSelected={selectedProject?.id === project.id}
+                    map={null}
+                  />
+                  <ProjectRoutes
+                    routes={project.routes || []}
+                    selected={selectedProject?.id === project.id}
+                  />
+                </React.Fragment>
               ))}
           </MapContainer>
 
