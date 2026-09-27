@@ -74,7 +74,6 @@ export default function Dashboard() {
           <div className="kpi-card-subtext">Projects</div>
           <div className="kpi-card-bottom">
             <span className="kpi-card-metric">{formatCurrency(s?.summary?.total_value || 0)}</span>
-            <span className="kpi-card-trend positive">+12% MoM</span>
           </div>
         </div>
 
@@ -99,7 +98,6 @@ export default function Dashboard() {
                   .reduce((sum, p) => sum + (Number(p.total_project_value) || 0), 0) || 0,
               )}
             </span>
-            <span className="kpi-card-status success">KHS Valid 100%</span>
           </div>
         </div>
 
@@ -120,7 +118,6 @@ export default function Dashboard() {
                   .reduce((sum, p) => sum + (Number(p.total_project_value) || 0), 0) || 0,
               )}
             </span>
-            <span className="kpi-card-status warning">SLA 24h</span>
           </div>
         </div>
 

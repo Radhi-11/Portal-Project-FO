@@ -93,46 +93,15 @@
   color: var(--color-text-secondary);
 }
 
-.kpi-card-trend {
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.kpi-card-trend.positive {
-  color: var(--color-success);
-}
-
-.kpi-card-trend.negative {
-  color: var(--color-danger);
-}
-
-.kpi-card-status {
+.kpi-card-status.error {
   font-size: 10px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-}
-
-.kpi-card-status.success {
-  background: var(--color-success-bg);
-  color: #057a2b;
-}
-
-.kpi-card-status.warning {
-  background: var(--color-warning-bg);
-  color: #8a4f02;
-}
-
-.kpi-card-status.error {
   background: var(--color-danger-bg);
   color: #820e1c;
-}
-
-.kpi-card-status.info {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
 }
 
 /* Loading Skeleton */
