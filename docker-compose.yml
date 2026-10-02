@@ -1,5 +1,6 @@
-# Development docker-compose.yml
-# For full development with Docker, use docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Production docker-compose.yml
+# Nginx reverse proxy on port 80 (standard HTTP, typically allowed by corporate firewalls)
+
 services:
   postgres:
     image: postgis/postgis:16-3.4
@@ -9,11 +10,10 @@ services:
       POSTGRES_DB: portal_project_fo
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -34,18 +34,18 @@ services:
       - DB_DATABASE=portal_project_fo
       - DB_USER=postgres
       - DB_PASSWORD=postgres123
-      - NODE_ENV=development
+      - NODE_ENV=production
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     volumes:
       - ./backend/src:/app/src
       - ./backend/sql:/app/sql
       - ./backend/.env:/app/.env
       - portal-uploads:/app/uploads
-    command: npm run dev:mem
+    command: node src/server.prod.js
 
   frontend:
     build:
@@ -53,8 +53,8 @@ services:
       dockerfile: Dockerfile.dev
     container_name: portal-frontend
     restart: unless-stopped
-    ports:
-      - "5173:5173"
+    expose:
+      - "5173"
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/index.html:/app/index.html
@@ -64,6 +64,18 @@ services:
     command: npm run dev -- --host 0.0.0.0 --port 5173
     depends_on:
       - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: portal-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d:ro
+    depends_on:
+      - backend
+      - frontend
 
 volumes:
   postgres-data:
